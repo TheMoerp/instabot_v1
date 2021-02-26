@@ -5,11 +5,11 @@ import binascii
 
 from urllib.parse import quote_plus
 
-# pip install pycryptodomex
+# pycryptodomex
 from Cryptodome import Random
 from Cryptodome.Cipher import AES
 
-# pip install PyNaCl
+# PyNaCl
 from nacl.public import PublicKey, SealedBox
 
 
@@ -38,13 +38,14 @@ def encrypt_password(key_id, pub_key, password, version=10):
     return quote_plus(f'#PWD_INSTAGRAM_BROWSER:{version}:{time}:{encrypted}')
 
 
-def inputComps():
-    key_id = input("key-id: ")
-    pub_key = input("pub_key: ")
-    pwd = input("password: ")
 
-    enc_pwd = encrypt_password(key_id, pub_key, pwd)
-    return enc_pwd
+# def inputComps():
+#     key_id = int(input("key-id: "))
+#     pub_key = input("pub_key: ")
+#     pwd = input("password: ")
+
+#     enc_pwd = encrypt_password(key_id, pub_key, pwd)
+#     return enc_pwd
 
 
-print(inputComps)
+# print(inputComps())
