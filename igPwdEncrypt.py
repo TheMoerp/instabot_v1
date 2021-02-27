@@ -36,16 +36,3 @@ def encrypt_password(key_id, pub_key, password, version=10):
     encrypted = base64.b64encode(encrypted).decode('utf-8')
 
     return quote_plus(f'#PWD_INSTAGRAM_BROWSER:{version}:{time}:{encrypted}')
-
-
-
-# def inputComps():
-#     key_id = int(input("key-id: "))
-#     pub_key = input("pub_key: ")
-#     pwd = input("password: ")
-
-#     enc_pwd = encrypt_password(key_id, pub_key, pwd)
-#     return enc_pwd
-
-
-# print(inputComps())

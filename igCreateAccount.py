@@ -1,24 +1,25 @@
 import requests
 import json
-
+from proxyCrawler import proxy_request
 from igPwdEncrypt import encrypt_password
 
 
-key_id = 190
-pub_key = "bd0475b2c92847a475d5d59b682be0752aadb6777f6b5b6c2ed1b7eb4411717b"
+keyId = 212
+pubKey = "fd1b44ee842e66d2178f3b406a8468b7739cc14752a7c827fe77a46270437512"
 
 
 urlCmdPart = "/accounts/web_create_ajax/attempt/"
 
-token = "QEXVwVm7jC29tJ2GaqEBSL5NbCnJuGjb"
-igAjax = "df8e0d63baeb"
+token = "RHgkBu4tUfBVWMXFm1K456MnSaLZzurT"
+igAjax = "0edc1000e5e7"
+
 contentType = "application/x-www-form-urlencoded"
 baseUrl = "https://www.instagram.com"
 connectionType = "close"
 
 opt_into_one_tap = "false"
 
-mail = "geborgenphantastischerluchs@datenschutz.ru"
+mail = "EntzueckendUnfassbarerSkorpion@existiert.net"
 pwd = "daspasswordistsicher"
 username = "testnasdas"
 #first_name = "testman"
@@ -30,7 +31,7 @@ username = "testnasdas"
 #body = "email={}&enc_password={}&username={}&firstname={}&opt_into_one_tap=false".format(mail, encPwd, username, first_name)
 
 
-def BuildCredentialsBody(mail, firstName, keyId, pubKey):
+def BuildCredentialsBody(mail, keyId, pubKey):
     pwd = "e1nzig@rt1gesP@5sw0rd"
     firstName = "IchBinKeinBot"
     encPwd = encrypt_password(keyId, pubKey, pwd, version=10)
@@ -48,8 +49,7 @@ def BuildAgeBody():
     return body
 
 
-
-def PostRequest(baseUrl, urlCmdPart, connectionType, token, igAjax, contentType, body):
+def PostRequest(baseUrl, urlCmdPart, connectionType, token, igAjax, contentType, body, workingProxy):
     url = "{}{}".format(baseUrl, urlCmdPart)
     headers = {
         "Connection": connectionType,
@@ -58,32 +58,65 @@ def PostRequest(baseUrl, urlCmdPart, connectionType, token, igAjax, contentType,
         "X-CSRFToken": token,
     }
 
-    response = requests.post(url, headers=headers, data=body)
-    #print("Status Code: {}\nText: {}".format(response.status_code, response.text))
-    jsonObject = json.loads(response.text)
+    respTuple = proxy_request('post', url, headers, body, workingProxy)
+    resp = respTuple[0]
+    proxy = respTuple[1]
+    print(resp.text)
+
+    jsonObject = json.loads(resp.text)
     status = jsonObject["status"]
-    #print(jsonObject["status"])
-    return status
+    return (status, proxy)
 
 
 def CreateAccountOnIG():
-    credBody = BuildCredentialsBody(mail, firstName, keyId, pubKey)
-    credUrlCmdPart = "/accounts/web_create_ajax/attempt/"
-    status = PostRequest(baseUrl, credUrlCmdPart, connectionType, token, igAjax, contentType, credBody)
+    status = ''
+    spamDedCnt = 0
+
+    while status != "ok":
+        credBody = BuildCredentialsBody(mail, keyId, pubKey)
+        credUrlCmdPart = "/accounts/web_create_ajax/attempt/"
+
+        statusTuple = PostRequest(baseUrl, credUrlCmdPart, connectionType, token, igAjax, contentType, credBody, '')
+        status = statusTuple[0]
+        proxy = statusTuple[1]
+
+        if status == "fail":
+            spamDedCnt += 1
+            print("Instagram marked this request as spam. The Spam-detection is {}. Trying another proxy...\n".format(spamDedCnt))
+        elif status != "ok":
+            print("An unknown error has been received.")
+            exit()
+
+    print("--- the user data has been entered successfully ---")
+    status = ''
     
-    if status == "ok":
+    while status != "ok":
         ageBody = BuildAgeBody()
         ageUrlCmdPart = "/web/consent/check_age_eligibility/"
-        status == PostRequest(baseUrl, ageUrlCmdPart, connectionType, token, igAjax, conentType, ageBody)
 
-        if status == "ok":
-            print("An confermation code has been send to the following mail-address:\n{}".format(mail))
-            confCode = input("Enter the confirmation code: ")
+        statusTuple = PostRequest(baseUrl, ageUrlCmdPart, connectionType, token, igAjax, contentType, ageBody, proxy)
+        status = statusTuple[0]
+        proxy = statusTuple[1]
+
+        if status == "fail":
+            spamDedCnt += 1
+            print("Instagram marked this request as spam. The Spam-detection is {}. Trying another proxy...\n".format(spamDedCnt))
+        elif status != "ok":
+            print("An unknown error has been received.")
+            exit()
+
+    print("--- The age has been entered successfully ---")
+    status = ''
+
+    while status != "ok":
+        print("An confermation code has been send to the following mail-address:\n{}".format(mail))
+        confCode = input("Enter the confirmation code: ")
+
             
 
 
 
+CreateAccountOnIG()
 
 
-
-PostRequest(baseUrl, urlCmdPart, connectionType, token, igAjax, contentType, body)
+#PostRequest(baseUrl, urlCmdPart, connectionType, token, igAjax, contentType, body)
