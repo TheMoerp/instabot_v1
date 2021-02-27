@@ -2,3 +2,5 @@ build/
 .vscode/
 __pycache__/
 *.pyc
+Logs/
+*.log

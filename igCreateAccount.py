@@ -136,9 +136,30 @@ def CreateAccountOnIG():
 
     print("--- The age has been entered successfully ---")
     status = ''
+    time.sleep(1.0)
 
     while status != "ok":
-        print("An confermation code has been send to the following mail-address: {}".format(mail))
+        baseUrl = "https://i.instagram.com"
+
+        mailBody = BuildSendMailBody(mail, deviceId)
+
+        statusTuple = PostRequest(baseUrl, SEND_PATH, token, igAjax, mailBody, proxy)
+        status = statusTuple[0]
+        proxy = statusTuple[1]
+
+        print(statusTuple)
+        if status == "fail":
+            spamDedCnt += 1
+            print("Instagram marked this request as spam. The Spam-detection is {}. Trying another proxy...\n".format(spamDedCnt))
+        elif status != "ok":
+            print("An unknown error has been received.")
+            exit()
+
+    print("--- An Confermation code has been send to {} ---".format(mail))
+    status = ''
+    time.sleep(1.0)
+
+    while status != "ok":
         confCode = input("Enter the confirmation code: ")
         baseUrl = "https://i.instagram.com"
 
@@ -153,7 +174,6 @@ def CreateAccountOnIG():
             print("Instagram marked this request as spam. The Spam-detection is {}. Trying another proxy...\n".format(spamDedCnt))
         elif status != "ok":
             print("An unknown error has been received.")
-            exit()
     
     print("--- the confermation code has been accepted ---")
     status = ''
