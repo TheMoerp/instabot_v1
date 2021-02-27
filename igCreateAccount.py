@@ -2,16 +2,18 @@ import requests
 import json
 import time
 import logging
+import random
 from proxyCrawler import proxy_request
 from igPwdEncrypt import encrypt_password
+import logger
 
 ############################
-keyId = 212
-pubKey = "fd1b44ee842e66d2178f3b406a8468b7739cc14752a7c827fe77a46270437512"
-token = "MbpnYnqPmQZON1CzRcz2QXFfrbgsha2i"
+keyId = 27
+pubKey = "bca94a55472cbb9fdd02b0061e9463c5e9e291a2634015eb4dc5eb658d8d221d"
+token = "JKoMWa3poBvcADgpTqpoYkcXJ6cv7Zyu"
 igAjax = "0edc1000e5e7"
 appId = "936619743392459"
-deviceId = "YDp6mgALAAE0Qu8WOeOqQlZ_xEP9" # new
+deviceId = "6DDFB88795C3-445798DA5FB778C8C94C" # new
 ############################
 
 
@@ -22,25 +24,19 @@ SEND_PATH = "/api/v1/accounts/send_verify_email/"
 CONF_PATH = "/api/v1/accounts/check_confirmation_code/"
 ##################
 
+#### User Data ####
+MAIL = "meingottklappdochentlich@dsgvo.ru"
+USERNAME = "1chb1ne1nb0t1382"
+PASSWORD = "e1nzig@rt1gesP@5sw0rd"
+###################
 
-
-contentType = "application/x-www-form-urlencoded"
 BASE_URL = "https://www.instagram.com"
 
-mail = "matthias@hottis.de"
-pwd = "daspasswordistsicher"
-username = "tesadstnasdas"
-
-
-
-
-logging.basicConfig(filename='Logs/igLogon.log', level=logging.DEBUG)
 
 
 def BuildUserDataBody(mail, keyId, pubKey, username):
-    pwd = "e1nzig@rt1gesP@5sw0rd"
     firstName = "IchBinKeinBot"
-    encPwd = encrypt_password(keyId, pubKey, pwd, version=10)
+    encPwd = encrypt_password(keyId, pubKey, PASSWORD, version=10)
     body = "email={}&enc_password={}&username={}&firstname={}&seamless_login_enabled=1&opt_into_one_tap=false".format(mail, encPwd, username, firstName)
 
     return body
@@ -66,8 +62,6 @@ def BuildConfermationBody(mail, deviceId, confCode):
     return body
 
 
-
-
 def PostRequest(baseUrl, urlCmdPart, token, igAjax, body, workingProxy):
     url = "{}{}".format(baseUrl, urlCmdPart)
     headers = {
@@ -80,13 +74,16 @@ def PostRequest(baseUrl, urlCmdPart, token, igAjax, body, workingProxy):
         "X-IG-App-ID": appId
     }
 
-    debugHeaders = "Connection: close\nContent-Type: application/x-www-form-urlencoded\nX-Instagram-AJAX: {}\nX-CSRFToken: {}\nX-IG-APP-ID: {}".format(igAjax, token, appId)
-
     respTuple = proxy_request('post', url, headers, body, workingProxy)
     resp = respTuple[0]
     proxy = respTuple[1]
 
-    logging.debug('\nURL: {}\nMethode: post\n\n--- Headers ---\n{}\n\n--- Body ---\n{}\n\n--- Response ---\n{}\n'.format(url, debugHeaders, body, resp.text))
+
+    # logHeaders = "Connection: close\n{}Content-Type: application/x-www-form-urlencoded\n{}X-Instagram-AJAX: {}\n{}X-CSRFToken: {}\n{}X-IG-APP-ID: {}".format(
+    #               logger.NEWLINE_DEBUG, logger.NEWLINE_DEBUG,  igAjax, logger.NEWLINE_DEBUG, token, logger.NEWLINE_DEBUG, appId)
+    # logger.logEntry("debug", "  --- Request ---\n{}URL: {}\n{}Methode: post\n\n{}--- Headers ---\n{}{}".format(
+    #               logger.NEWLINE_DEBUG, url, logger.NEWLINE_DEBUG, logger.NEWLINE_DEBUG, logger.NEWLINE_DEBUG, logHeaders))
+    # logger.logEntry("debug", "--- Response ---\n{}{}".format(logger.NEWLINE_DEBUG, resp.text))
 
     jsonObject = json.loads(resp.text)
     status = jsonObject["status"]
@@ -94,16 +91,12 @@ def PostRequest(baseUrl, urlCmdPart, token, igAjax, body, workingProxy):
     return (status, proxy)
 
 
-
-
-
-
 def CreateAccountOnIG():
     status = ''
     spamDedCnt = 0
 
     while status != "ok":
-        userDataBody = BuildUserDataBody(mail, keyId, pubKey, username)
+        userDataBody = BuildUserDataBody(MAIL, keyId, pubKey, USERNAME)
 
         statusTuple = PostRequest(BASE_URL, USERDATA_PATH, token, igAjax, userDataBody, "")
         status = statusTuple[0]
@@ -111,14 +104,11 @@ def CreateAccountOnIG():
 
         if status == "fail":
             spamDedCnt += 1
-            print("Instagram marked this request as spam. The Spam-detection is {}. Trying another proxy...\n".format(spamDedCnt))
-        elif status != "ok":
-            print("An unknown error has been received.")
-            exit()
+            logger.logEntry("error", "  Request marked as spam. Spam-detections: {}".format(spamDedCnt))
 
-    print("--- the user data has been entered successfully ---")
+    logger.logEntry("info", "   --- The user data has been entered successfully ---")
     status = ''
-    time.sleep(1.0)
+    time.sleep(random.uniform(1.0, 2.0))
 
     while status != "ok":
         ageBody = BuildAgeBody()
@@ -129,41 +119,34 @@ def CreateAccountOnIG():
 
         if status == "fail":
             spamDedCnt += 1
-            print("Instagram marked this request as spam. The Spam-detection is {}. Trying another proxy...\n".format(spamDedCnt))
-        elif status != "ok":
-            print("An unknown error has been received.")
-            exit()
+            logger.logEntry("error", "  Request marked as spam. Spam-detections: {}".format(spamDedCnt))
 
-    print("--- The age has been entered successfully ---")
+    logger.logEntry("info", "   --- The age has been entered successfully ---")
     status = ''
-    time.sleep(1.0)
+    time.sleep(random.uniform(1.0, 2.0))
 
     while status != "ok":
         baseUrl = "https://i.instagram.com"
 
-        mailBody = BuildSendMailBody(mail, deviceId)
+        mailBody = BuildSendMailBody(MAIL, deviceId)
 
         statusTuple = PostRequest(baseUrl, SEND_PATH, token, igAjax, mailBody, proxy)
         status = statusTuple[0]
         proxy = statusTuple[1]
 
-        print(statusTuple)
         if status == "fail":
             spamDedCnt += 1
-            print("Instagram marked this request as spam. The Spam-detection is {}. Trying another proxy...\n".format(spamDedCnt))
-        elif status != "ok":
-            print("An unknown error has been received.")
-            exit()
+            logger.logEntry("error", "  Request marked as spam. Spam-detections: {}".format(spamDedCnt))
 
-    print("--- An Confermation code has been send to {} ---".format(mail))
+    logger.logEntry("info", "   --- An confermation code has been send to {} ---".format(MAIL))
     status = ''
-    time.sleep(1.0)
+    time.sleep(random.uniform(1.0, 2.0))
 
     while status != "ok":
-        confCode = input("Enter the confirmation code: ")
+        confCode = input("\nEnter the confirmation code: ")
         baseUrl = "https://i.instagram.com"
 
-        confBody = BuildConfermationBody(mail, deviceId, confCode)
+        confBody = BuildConfermationBody(MAIL, deviceId, confCode)
         
         statusTuple = PostRequest(baseUrl, CONF_PATH, token, igAjax, confBody, proxy)
         status = statusTuple[0]
@@ -171,14 +154,13 @@ def CreateAccountOnIG():
 
         if status == "fail":
             spamDedCnt += 1
-            print("Instagram marked this request as spam. The Spam-detection is {}. Trying another proxy...\n".format(spamDedCnt))
-        elif status != "ok":
-            print("An unknown error has been received.")
+            logger.logEntry("error", "  Request marked as spam. Spam-detections: {}".format(spamDedCnt))
     
-    print("--- the confermation code has been accepted ---")
+    print("--- the confermation code has been accepted ---\n--- Try to login with the following credentials ---\nUsername: {}\nPassword: {}\n".format(USERNAME, PASSWORD))
     status = ''
-    time.sleep(1.0)
-
+    time.sleep(random.uniform(1.0, 2.0))
+    logging.info("\n\n#### QUITING PROGRAM ####")
+    exit()
 
 
 
