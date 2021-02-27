@@ -16,7 +16,6 @@ appId = "936619743392459"
 deviceId = "6DDFB88795C3-445798DA5FB778C8C94C" # new
 ############################
 
-
 #### URL Path ####
 USERDATA_PATH = "/accounts/web_create_ajax/attempt/"
 AGE_PATH = "/web/consent/check_age_eligibility/"
@@ -90,7 +89,6 @@ def PostRequest(baseUrl, urlCmdPart, token, igAjax, body, workingProxy):
 
     return (status, proxy)
 
-
 def CreateAccountOnIG():
     status = ''
     spamDedCnt = 0
@@ -106,7 +104,7 @@ def CreateAccountOnIG():
             spamDedCnt += 1
             logger.logEntry("error", "  Request marked as spam. Spam-detections: {}".format(spamDedCnt))
 
-    logger.logEntry("info", "   --- The user data has been entered successfully ---")
+    logger.logEntry("info", "   The user data has been entered successfully")
     status = ''
     time.sleep(random.uniform(1.0, 2.0))
 
@@ -121,7 +119,7 @@ def CreateAccountOnIG():
             spamDedCnt += 1
             logger.logEntry("error", "  Request marked as spam. Spam-detections: {}".format(spamDedCnt))
 
-    logger.logEntry("info", "   --- The age has been entered successfully ---")
+    logger.logEntry("info", "   The age has been entered successfully")
     status = ''
     time.sleep(random.uniform(1.0, 2.0))
 
@@ -138,12 +136,13 @@ def CreateAccountOnIG():
             spamDedCnt += 1
             logger.logEntry("error", "  Request marked as spam. Spam-detections: {}".format(spamDedCnt))
 
-    logger.logEntry("info", "   --- An confermation code has been send to {} ---".format(MAIL))
+    logger.logEntry("info", "   An confermation code has been send to {}".format(MAIL))
     status = ''
     time.sleep(random.uniform(1.0, 2.0))
 
     while status != "ok":
         confCode = input("\nEnter the confirmation code: ")
+        print("")
         baseUrl = "https://i.instagram.com"
 
         confBody = BuildConfermationBody(MAIL, deviceId, confCode)
@@ -156,7 +155,9 @@ def CreateAccountOnIG():
             spamDedCnt += 1
             logger.logEntry("error", "  Request marked as spam. Spam-detections: {}".format(spamDedCnt))
     
-    print("--- the confermation code has been accepted ---\n--- Try to login with the following credentials ---\nUsername: {}\nPassword: {}\n".format(USERNAME, PASSWORD))
+    logger.logEntry("info", "   The confermation code has been accepted\n{}Try to login with the following credentials\n{}--Username: {}\n{}--Password: {}\n".format(
+                    logger.NEWLINE_INFO, logger.NEWLINE_INFO, USERNAME, logger.NEWLINE_INFO, PASSWORD))
+    #print("--- the confermation code has been accepted ---\n--- Try to login with the following credentials ---\nUsername: {}\nPassword: {}\n".format(USERNAME, PASSWORD))
     status = ''
     time.sleep(random.uniform(1.0, 2.0))
     logging.info("\n\n#### QUITING PROGRAM ####")
@@ -165,6 +166,3 @@ def CreateAccountOnIG():
 
 
 CreateAccountOnIG()
-
-
-#PostRequest(baseUrl, urlCmdPart, connectionType, token, igAjax, contentType, body)

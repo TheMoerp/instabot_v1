@@ -16,7 +16,9 @@ LEVEL_STYLES = {
 LOG_FORMAT = '[%(levelname)s]: %(message)s'
 LOG_PATH = 'Logs/CreateAccount.log'
 NEWLINE_DEBUG = "           "
+NEWLINE_INFO = "           "
 ######################################################
+
 
 logging.getLogger("urllib3.connectionpool").disabled = True
 
