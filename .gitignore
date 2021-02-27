@@ -3,4 +3,4 @@ build/
 __pycache__/
 *.pyc
 Logs/
-*.lo
+*.log
