@@ -2,14 +2,9 @@ import base64
 import struct
 import datetime
 import binascii
-
 from urllib.parse import quote_plus
-
-# pycryptodomex
 from Cryptodome import Random
 from Cryptodome.Cipher import AES
-
-# PyNaCl
 from nacl.public import PublicKey, SealedBox
 
 

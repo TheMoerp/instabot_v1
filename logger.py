@@ -19,6 +19,7 @@ LOG_FORMAT = '[%(levelname)s]: %(message)s'
 LOG_PATH = 'Logs/igSignUp.log'
 BACKUP_COUNT = 2
 NEWLINE_DEBUG = "           "
+NEWLINE_ERROR = "           "
 NEWLINE_INFO = "           "
 ######################################################
 
