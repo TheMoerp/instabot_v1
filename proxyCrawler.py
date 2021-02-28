@@ -2,6 +2,8 @@ import requests
 from bs4 import BeautifulSoup
 from random import choice
 import logger
+import random
+import time
 
 WORKING_PROXY_TRYS = 10
 
@@ -27,6 +29,7 @@ def proxy_request(requerstType, url, headers, body, workingProxy):
                 resp = requests.request(requerstType, url, headers=headers, data=body, proxies=proxy, timeout=5)
             else:
                 proxy = workingProxy
+                time.sleep(random.uniform(1.0, 2.0))
                 resp = requests.request(requerstType, url, headers=headers, data=body, proxies=workingProxy, timeout=10)
             logger.logEntry("debug", "  Request send with Proxy: {}".format(proxy["https"]))
             break
