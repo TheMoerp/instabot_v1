@@ -1,33 +1,85 @@
 import json
+import sessionClass
+import logger
 
 
 class Headers(object):
-    contentType = "application/x-www-form-urlencoded"
     encoding = "gzip, deflate"
     lang = "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7"
     userAgent = "Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:47.0) Gecko/20100101 Firefox/47.0"
-    accept = "*/*"
-    requestedWith = "XMLHttpRequest"
-
-    def __init__(self, connectType, ajax, token, appId):
-        self.connectType = connectType
-        self.ajax = ajax
-        self.token = token
-        self.appId = appId
+   
+    def __init__(self):
+        self.json = {}
 
     def GetJson(self):
+        return self.json
+
+    def GetPrettyHeaders(self):
+        prettyList = []
+        for curKey in self.json.keys():
+            curVal = self.json[curKey]
+            prettyList.append('{}{}: {}\n'.format(logger.NEWLINE_DEBUG, curKey, curVal))
+        
+        return ''.join(prettyList)
+
+
+
+class GetHeaders(Headers):
+    accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
+    
+    def __init__(self, connectType):
+        self.connectType = connectType
         self.json = {
             'Connection': self.connectType,
-            'X-Instagram-AJAX': self.ajax,
-            'Content-Type': Headers.contentType,
-            'Accept': Headers.accept,
-            'X-Requested-With': Headers.requestedWith,
+            'Accept': GetHeaders.accept,
             'User-Agent': Headers.userAgent,
-            'X-CSRFToken': self.token,
-            'X-IG-App-ID': self.appId,
             'Accept-Encoding': Headers.encoding,
             'Accept-Language': Headers.lang
         }
-        return self.json
 
-    # def GetPrettyHeaders(self):
+
+class PostHeaders(Headers):
+    contentType = "application/x-www-form-urlencoded"
+    accept = "*/*"
+    requestedWith = "XMLHttpRequest"
+    #appId = '936619743392459'
+    wwwClaim = '0'
+
+    def __init__(self, connectType, session):
+        self.connectType = connectType
+        self.ajax = session.ajax
+        self.token = session.token
+        self.json = {
+            'Connection': self.connectType,
+            'X-Instagram-AJAX': self.ajax,
+            'Content-Type': PostHeaders.contentType,
+            'Accept': self.accept,
+            'X-Requested-With': self.requestedWith,
+            'User-Agent': Headers.userAgent,
+            'X-CSRFToken': self.token,
+            #'X-IG-App-ID': PostHeaders.appId,
+            'X-IG-WWW-Claim': PostHeaders.wwwClaim,
+            'Accept-Encoding': Headers.encoding,
+            'Accept-Language': Headers.lang
+        }
+
+
+
+# class PostHeaders(Headers):
+#     def __init__(self, session):
+
+
+    
+    # def smallHeader(self):
+    #     self.connectType = 'close'
+    #     self.accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
+
+    #     self.json = {
+    #         'Connection': self.connectType,
+    #         'Accept': self.accept,
+    #         'User-Agent': Headers.userAgent,
+    #         'Accept-Encoding': Headers.encoding,
+    #         'Accept-Language': Headers.lang
+    #     }
+
+    

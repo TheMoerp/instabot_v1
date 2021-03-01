@@ -34,15 +34,19 @@ def GetProxy():
 def ProxyRequest(methode, baseUrl, urlPath, headers, body, workingProxy):
     url = "{}{}".format(baseUrl, urlPath)
     headers = headers.GetJson()
+    changedWP = False
 
     while True:
         if workingProxy == '':
             try:
                 proxy = GetProxy()
-                resp = requests.request(methode, url, headers=headers, data=body, proxies=proxy, timeout=NEW_PROXY_TIMEOUT)
+                if methode == 'post':
+                    resp = requests.request(methode, url, headers=headers, data=body, proxies=proxy, timeout=NEW_PROXY_TIMEOUT)
+                else:
+                    resp = requests.request(methode, url, headers=headers, proxies=proxy, timeout=NEW_PROXY_TIMEOUT)
                 logger.logEntry("debug", "  Request send with proxy: {}".format(proxy["https"]))
                 
-                return (resp, proxy)
+                return (resp, proxy, changedWP)
             except:
                 logger.logEntry("warning", "Proxy {} failed. Trying another one...".format(proxy["https"]))
         else:
@@ -51,29 +55,10 @@ def ProxyRequest(methode, baseUrl, urlPath, headers, body, workingProxy):
                     resp = requests.request(methode, url, headers=headers, data=body, proxies=workingProxy, timeout=WORKING_PROXY_TIMEOUT)
                     logger.logEntry("debug", "  Request send with the previous proxy")
                    
-                    return (resp, workingProxy)
+                    return (resp, workingProxy, changedWP)
                 except:
                     logger.logEntry("warning", "Previous Proxy failed. {} more Trys...".format(i-1))
                     time.sleep(random.uniform(0.5, 1.0))
+            logger.logEntry("warning", "Changing Proxy...")
             workingProxy = ''
-
-
-
-
-
-# def proxyRequest(requerstType, url, headers, body, workingProxy):
-#     while True:
-#         try:
-#             if workingProxy == '':
-#                 proxy = get_proxy()
-#                 resp = requests.request(requerstType, url, headers=headers, data=body, proxies=proxy, timeout=5)
-#             else:
-#                 proxy = workingProxy
-#                 time.sleep(random.uniform(1.0, 2.0))
-#                 resp = requests.request(requerstType, url, headers=headers, data=body, proxies=workingProxy, timeout=10)
-#             logger.logEntry("debug", "  Request send with Proxy: {}".format(proxy["https"]))
-#             break
-#         except:
-#             logger.logEntry("warning", "Proxy {} failed. Trying another one...".format(proxy["https"]))
-
-#     return (resp, proxy)
+            changedWP = True
