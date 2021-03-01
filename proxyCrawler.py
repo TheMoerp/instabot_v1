@@ -57,8 +57,8 @@ def ProxyRequest(methode, baseUrl, urlPath, headers, body, workingProxy):
                    
                     return (resp, workingProxy, changedWP)
                 except:
-                    logger.logEntry("warning", "Previous Proxy failed. {} more Trys...".format(i-1))
+                    logger.logEntry("warning", "Previous proxy failed. {} more Trys...".format(i-1))
                     time.sleep(random.uniform(0.5, 1.0))
-            logger.logEntry("warning", "Changing Proxy...")
+            logger.logEntry("warning", "Changing proxy...")
             workingProxy = ''
             changedWP = True

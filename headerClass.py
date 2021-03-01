@@ -11,9 +11,11 @@ class Headers(object):
     def __init__(self):
         self.json = {}
 
+    # returns the header in dict/json format
     def GetJson(self):
         return self.json
 
+    # returns a prettified header string
     def GetPrettyHeaders(self):
         prettyList = []
         for curKey in self.json.keys():
@@ -23,7 +25,7 @@ class Headers(object):
         return ''.join(prettyList)
 
 
-
+# header for get-requests
 class GetHeaders(Headers):
     accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
     
@@ -38,6 +40,7 @@ class GetHeaders(Headers):
         }
 
 
+# header for post-requests
 class PostHeaders(Headers):
     contentType = "application/x-www-form-urlencoded"
     accept = "*/*"
@@ -62,24 +65,3 @@ class PostHeaders(Headers):
             'Accept-Encoding': Headers.encoding,
             'Accept-Language': Headers.lang
         }
-
-
-
-# class PostHeaders(Headers):
-#     def __init__(self, session):
-
-
-    
-    # def smallHeader(self):
-    #     self.connectType = 'close'
-    #     self.accept = 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'
-
-    #     self.json = {
-    #         'Connection': self.connectType,
-    #         'Accept': self.accept,
-    #         'User-Agent': Headers.userAgent,
-    #         'Accept-Encoding': Headers.encoding,
-    #         'Accept-Language': Headers.lang
-    #     }
-
-    
