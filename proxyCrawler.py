@@ -5,11 +5,8 @@ import logger
 import time
 import random
 import headerClass
+import config as c
 
-SAME_PROXY_RETRYS = 5
-NEW_PROXY_TIMEOUT = 5
-WORKING_PROXY_TIMEOUT = 7
-WORKING_PROXY_RETRYS = 5
 
 usedProxys = set()
 def GetProxy():
@@ -23,8 +20,9 @@ def GetProxy():
                                         map(lambda x:x.text, soup.findAll('td')[1::8]))))))}
         if proxy['https'] not in usedProxys:
             break
-        elif sameProxyCnt == SAME_PROXY_RETRYS:
-            logger.logEntry("critical", "Tryed to get the same proxy for {} times\n<---- QUITING PROGRAM ---->".format(SAME_PROXY_RETRYS))
+        elif sameProxyCnt == c.MAX_SAME_PROXY:
+            if c.DEBUG1:
+                logger.logEntry("critical", "Tryed to get the same proxy for {} times\n<---- QUITING PROGRAM ---->".format(c.MAX_SAME_PROXY))
             exit()
     usedProxys.add(proxy['https'])
 
@@ -41,24 +39,29 @@ def ProxyRequest(methode, baseUrl, urlPath, headers, body, workingProxy):
             try:
                 proxy = GetProxy()
                 if methode == 'post':
-                    resp = requests.request(methode, url, headers=headers, data=body, proxies=proxy, timeout=NEW_PROXY_TIMEOUT)
+                    resp = requests.request(methode, url, headers=headers, data=body, proxies=proxy, timeout=c.NEW_PROXY_TIMEOUT)
                 else:
-                    resp = requests.request(methode, url, headers=headers, proxies=proxy, timeout=NEW_PROXY_TIMEOUT)
-                logger.logEntry("debug", "  Request send with proxy: {}".format(proxy["https"]))
+                    resp = requests.request(methode, url, headers=headers, proxies=proxy, timeout=c.NEW_PROXY_TIMEOUT)
+                if c.DEBUG2:
+                    logger.logEntry("debug", "  Request send with proxy: {}".format(proxy["https"]))
                 
                 return (resp, proxy, changedWP)
             except:
-                logger.logEntry("warning", "Proxy {} failed. Trying another one...".format(proxy["https"]))
+                if c.DEBUG2:
+                    logger.logEntry("warning", "Proxy {} failed. Trying another one...".format(proxy["https"]))
         else:
-            for i in range(WORKING_PROXY_RETRYS, 0, -1):
+            for i in range(c.WORKING_PROXY_RETRYS, 0, -1):
                 try:
-                    resp = requests.request(methode, url, headers=headers, data=body, proxies=workingProxy, timeout=WORKING_PROXY_TIMEOUT)
-                    logger.logEntry("debug", "  Request send with the previous proxy")
+                    resp = requests.request(methode, url, headers=headers, data=body, proxies=workingProxy, timeout=c.WORKING_PROXY_TIMEOUT)
+                    if c.DEBUG2:
+                        logger.logEntry("debug", "  Request send with the previous proxy")
                    
                     return (resp, workingProxy, changedWP)
                 except:
-                    logger.logEntry("warning", "Previous proxy failed. {} more Trys...".format(i-1))
+                    if c.DEBUG2:
+                        logger.logEntry("warning", "Previous proxy failed. {} more Trys...".format(i-1))
                     time.sleep(random.uniform(0.5, 1.0))
-            logger.logEntry("warning", "Changing proxy...")
+            if c.DEBUG2:
+                logger.logEntry("warning", "Changing proxy...")
             workingProxy = ''
             changedWP = True

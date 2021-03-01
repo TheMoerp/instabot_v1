@@ -2,18 +2,18 @@ import coloredlogs
 import logging
 import logging.handlers
 import os
-
+import config as c
 
 ######################################################
 FIELD_STYLES = {
     'levelname': {'bold': True, 'color': 'black'}
 }
 LEVEL_STYLES = {
-    'critical': {'bold': True, 'color': 'red'},
-    'error': {'bold': True, 'color': 'red'},
-    'warning': {'color': 'red'},
-    'info': {'bold': True, 'color': 'green'},
-    'debug': {'color': 'white'}
+    'critical': {'bold': True, 'color': c.CRITICAL_COLOR},
+    'error': {'bold': True, 'color': c.ERROR_COLOR},
+    'warning': {'color': c.WARNING_COLOR},
+    'info': {'bold': True, 'color': c.INFO_COLOR},
+    'debug': {'color': c.DEBUG_COLOR}
 }
 LOG_FORMAT = '[%(levelname)s]: %(message)s'
 LOG_PATH = 'Logs/igSignUp.log'
@@ -22,6 +22,7 @@ NEWLINE_DEBUG = "           "
 NEWLINE_ERROR = "           "
 NEWLINE_INFO = "           "
 ######################################################
+
 
 rollOver = os.path.isfile(LOG_PATH)
 file = logging.handlers.RotatingFileHandler(LOG_PATH, mode='a', backupCount=BACKUP_COUNT)

@@ -1,0 +1,22 @@
+account-data:
+  mail: FrischSprachloserSchwan@schabernack.ru
+  username: 1chb1nkeinb0t314223
+  name: IchBinKeinBot
+  password: e1nzig@rt1gesP@5sw0rd
+  birthday: 9.9.1999
+
+proxy-config:
+  max_same_proxy: 3
+  new_proxy_timeout: 5
+  working_proxy_timeout: 7
+  working_proxy_retrys: 5
+  max_proxy_spam: 3
+
+log-colors:
+  debug: white
+  info: green
+  warning: red
+  error: red
+  critical: red
+
+debug-log-level: 3

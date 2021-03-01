@@ -6,25 +6,9 @@ import logger
 import sessionClass
 import headerClass
 import accountClass
+import config as c
 from proxyCrawler import ProxyRequest
 from igPwdEncrypt import encrypt_password
-
-
-
-#### User Data ####
-MAIL = "FantastischWunderbarerStrauss@spam.care"
-USERNAME = "jungeichhasseinsta"
-PASSWORD = "e1nzig@rt1gesP@5sw0rd"
-FIRSTNAME = "IchBidnKeinBotKappa"
-AGE = {
-    'day': '6',
-    'month': '9',
-    'year': '1969'
-}
-###################
-
-
-MAX_PROXY_SPAM = 3
 
 
 # quick checks the response to known issues
@@ -52,6 +36,7 @@ def RespChecker(baseUrl, urlPath, h, body, proxy, resp, curSpamCnt, curProxySpam
 
 # function to log prettified request & response
 def debugOutput(level, baseUrl, urlPath, h, body, proxy, resp):
+    global spamCnt
     url = "{}{}".format(baseUrl, urlPath)
 
     # pretify response
@@ -67,7 +52,7 @@ def debugOutput(level, baseUrl, urlPath, h, body, proxy, resp):
     prettyBody[0] = prettyBody[0][1::]
     prettyBody = ['{}{}'.format(logger.NEWLINE_DEBUG, x) for x in prettyBody]
     prettyBody = ''.join(prettyBody)
-
+    
     # debug log: connection-data, headers, body, response
     logger.logEntry(level, "   --- Debug output ---\n{}URL: {}\n{}Proxy: {}\n\n{}-- Headers --\n{}\n{}-- Body --\n{}\n{}-- Response --\n{}".format(logger.NEWLINE_DEBUG, 
                     url, logger.NEWLINE_DEBUG, proxy['https'], logger.NEWLINE_DEBUG, h.GetPrettyHeaders(), logger.NEWLINE_DEBUG, prettyBody, logger.NEWLINE_DEBUG, prettyResp))
@@ -89,17 +74,18 @@ def EnterFunction(baseUrl, urlPath, h, body, proxy, confCheck):
         time.sleep(random.uniform(1.0, 2.0))
 
         # check if the proxy has to be changed due to too frequent spam detections
-        if curProxySpamCnt <= MAX_PROXY_SPAM:
+        if curProxySpamCnt <= c.MAX_PROXY_SPAM:
             respTuple = ProxyRequest('post', baseUrl, urlPath, h, body, proxy)
             if respTuple[2]:
                 curProxySpamCnt = 0
         else:
-            logger.logEntry("warning", "Changing proxy...")
+            if c.DEBUG2:
+                logger.logEntry("warning", "Changing proxy...")
             respTuple = ProxyRequest('post', baseUrl, urlPath, h, body, '')
             proxy = respTuple[1]
             curProxySpamCnt = 0
-        
-        #debugOutput('debug', baseUrl, urlPath, h, body, proxy, respTuple[0].text)
+        if c.DEBUG3:
+            debugOutput('debug', baseUrl, urlPath, h, body, proxy, respTuple[0].text)
 
         # quick checks the response to known issues
         respCheck = RespChecker(baseUrl, urlPath, h, body, proxy, respTuple[0], curSpamCnt, curProxySpamCnt)
@@ -107,10 +93,11 @@ def EnterFunction(baseUrl, urlPath, h, body, proxy, confCheck):
 
 
 def SignUpNewAccount():
-    logger.logEntry("info", "   <---- STARTING TO CREATE AN INSTAGRAM ACCOUNT ---->\n")
+    if c.DEBUG1:
+        logger.logEntry("info", "   <---- STARTING TO CREATE AN INSTAGRAM ACCOUNT ---->\n")
 
     # creating objects
-    nAcc = accountClass.Account(MAIL, FIRSTNAME, USERNAME, PASSWORD, AGE['day'], AGE['month'], AGE['year'])
+    nAcc = accountClass.Account(c.MAIL, c.NAME, c.USERNAME, c.PASSWORD, c.DAY, c.MONTH, c.YEAR)
     s = sessionClass.Session()
     h = headerClass.PostHeaders('close', s)
     proxy = s.GetWorkingProxy()
@@ -123,7 +110,8 @@ def SignUpNewAccount():
     body = "email={}&enc_password={}&username={}&firstname={}&seamless_login_enabled=1&opt_into_one_tap=false".format(
                   nAcc.mail, encPassword, nAcc.username, nAcc.name)
     respTuple = EnterFunction(baseUrl, urlPath, h, body, proxy, False)
-    logger.logEntry("info", "   The user data has been entered successfully")
+    if c.DEBUG1:
+        logger.logEntry("info", "   The user data has been entered successfully")
     time.sleep(random.uniform(1.0, 2.0))
 
     # Age
@@ -131,7 +119,8 @@ def SignUpNewAccount():
     urlPath = "/web/consent/check_age_eligibility/"
     body = "day={}&month={}&year={}".format(nAcc.day, nAcc.month, nAcc.year)
     respTuple = EnterFunction(baseUrl, urlPath, h, body, respTuple[1], False)
-    logger.logEntry("info", "   The age has been entered successfully")
+    if c.DEBUG1:
+        logger.logEntry("info", "   The age has been entered successfully")
     time.sleep(random.uniform(1.0, 2.0))
 
     # send mail
@@ -139,8 +128,10 @@ def SignUpNewAccount():
     urlPath = "/api/v1/accounts/send_verify_email/"
     body = "device_id={}&email={}".format(s.mid, nAcc.mail)
     respTuple = EnterFunction(baseUrl, urlPath, h, body, respTuple[1], False)
-    logger.logEntry("info", "   An confermation code has been send to the following mail address\n{}> Mail: {}".format(
-                    logger.NEWLINE_INFO, nAcc.mail))
+
+    if c.DEBUG1:
+        logger.logEntry("info", "   An confermation code has been send to the following mail address\n{}> Mail: {}".format(
+                        logger.NEWLINE_INFO, nAcc.mail))
     time.sleep(random.uniform(1.0, 2.0))
 
     # check confermation code
@@ -150,20 +141,22 @@ def SignUpNewAccount():
     respTuple = EnterFunction(baseUrl, urlPath, h, bodyPart, respTuple[1], True)
     respDict = json.loads(respTuple[0].text)
     signUpCode = respDict['signup_code']
-    logger.logEntry("info", "   The confermation code has been accepted")
+    if c.DEBUG1:
+        logger.logEntry("info", "   The confermation code has been accepted")
     time.sleep(random.uniform(2.0, 3.0))
 
     # create account
     baseUrl = "https://www.instagram.com"
     urlPath = "/accounts/web_create_ajax/"
-    encPassword = encrypt_password(s.keyId, s.pubKey, nAcc.password, version=s.cryptVersion)
+    #encPassword = encrypt_password(s.keyId, s.pubKey, nAcc.password, version=s.cryptVersion)
     body = "email={}&enc_password={}&username={}&first_name={}&month={}&day={}&year={}&client_id={}&searmless_login_enabled=1&tos_version=eu&force_sign_up_code={}".format(
             nAcc.mail, encPassword, nAcc.username, nAcc.name, nAcc.month, nAcc.day, nAcc.year, s.mid, signUpCode)
     respTuple = EnterFunction(baseUrl, urlPath, h, body, respTuple[1], False)
-    print(respTuple[0].text)
-    #debugOutput('error', baseUrl, urlPath, h, body, proxy, respTuple[0].text)
+    if c.DEBUG3:
+        debugOutput('error', baseUrl, urlPath, h, body, proxy, respTuple[0].text)
     print("")
-    logger.logEntry("critical", "<---- QUITING PROGRAM ---->")
+    if c.DEBUG1:
+        logger.logEntry("critical", "<---- QUITING PROGRAM ---->")
 
 
 SignUpNewAccount()
