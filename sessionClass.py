@@ -23,8 +23,9 @@ class Session(object):
         self.ajax = self.respJson['rollout_hash']
         self.token = self.respJson['config']['csrf_token']
         logger.logEntry('debug', '  Shared data has been scraped')
+
         self.respTuple = proxyCrawler.ProxyRequest('get', Session.baseUrl, Session.urlPathCI, Session.h, '', self.respTuple[1])
-        self.clientId = self.respTuple[0].text
+        self.mid = self.respTuple[0].text
         self.proxy = self.respTuple[1]
         logger.logEntry('debug', '  Client_ID has been scraped')
         logger.logEntry('info', '   A new session has been created successfully.')
