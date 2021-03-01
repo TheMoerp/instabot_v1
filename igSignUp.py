@@ -10,28 +10,17 @@ from proxyCrawler import ProxyRequest
 from igPwdEncrypt import encrypt_password
 
 
-############################
-keyVersion = 9
-keyId = 87
-pubKey = "8dd9aad29d9a614c338cff479f850d3ec57c525c33b3f702ab65e9e057fc087e"
-token = "CxwHx0nE7W18kjPGZomzvinxfq58lHH4"
-igAjax = "0edc1000e5e7"
-appId = "124024574287414"
-deviceId = "8CBE50B09E734EBE83DE2C38D385A5C2"
-#clientId = "1CE070D14F" # woher kommt die?????????
-############################
-
 
 #### User Data ####
-MAIL = "schwulechinesen@dsgvo.ru"
-USERNAME = "jonfoiansfziewtu2"
+MAIL = "FantastischWunderbarerStrauss@spam.care"
+USERNAME = "jungeichhasseinsta"
 PASSWORD = "e1nzig@rt1gesP@5sw0rd"
-FIRSTNAME = "IchBinKeinBotKappa"
+FIRSTNAME = "IchBidnKeinBotKappa"
 AGE = {
     'day': '6',
     'month': '9',
     'year': '1969'
-} 
+}
 ###################
 
 
@@ -94,7 +83,7 @@ def EnterFunction(baseUrl, urlPath, h, body, proxy, confCheck):
             proxy = respTuple[1]
             curProxySpamCnt = 0
 
-        debugOutput('debug', baseUrl, urlPath, h, body, proxy, respTuple[0].text)
+        #debugOutput('debug', baseUrl, urlPath, h, body, proxy, respTuple[0].text)
 
         respCheck = RespChecker(baseUrl, urlPath, h, body, proxy, respTuple[0], curSpamCnt, curProxySpamCnt)
     return respTuple
@@ -136,7 +125,7 @@ def SignUpNewAccount():
     # send mail
     baseUrl = "https://i.instagram.com"
     urlPath = "/api/v1/accounts/send_verify_email/"
-    body = "device_id={}&email={}".format(s.deviceId, nAcc.mail)
+    body = "device_id={}&email={}".format(s.clientId, nAcc.mail)
 
     respTuple = EnterFunction(baseUrl, urlPath, h, body, respTuple[1], False)
     logger.logEntry("info", "   An confermation code has been send to the following mail address\n{}> Mail: {}".format(
@@ -155,7 +144,7 @@ def SignUpNewAccount():
         curProxySpamCnt += 1
         confCode = input("\nEnter the confirmation code: ")
         print("")
-        body = "code={}&device_id={}&email={}".format(confCode, s.deviceId, nAcc.mail)
+        body = "code={}&device_id={}&email={}".format(confCode, s.clientId, nAcc.mail)
         time.sleep(random.uniform(1.0, 2.0))
         if curProxySpamCnt <= MAX_PROXY_SPAM:
             respTuple = ProxyRequest('post', baseUrl, urlPath, h, body, proxy)
@@ -165,7 +154,7 @@ def SignUpNewAccount():
             respTuple = ProxyRequest('post', baseUrl, urlPath, h, body, '')
             curProxySpamCnt = 0
             logger.logEntry("warning", "Changing Proxy...")
-        debugOutput('debug', baseUrl, urlPath, h, body, proxy, respTuple[0].text)
+        #debugOutput('debug', baseUrl, urlPath, h, body, proxy, respTuple[0].text)
         respTuple = ProxyRequest('post', baseUrl, urlPath, h, body, respTuple[1])
         respCheck = RespChecker(baseUrl, urlPath, h, body, proxy, respTuple[0], curSpamCnt, curProxySpamCnt)
 
@@ -183,7 +172,7 @@ def SignUpNewAccount():
     
     respTuple = EnterFunction(baseUrl, urlPath, h, body, respTuple[1], False)
     print(respTuple[0].text)
-    debugOutput('error', baseUrl, urlPath, h, body, proxy, respTuple[0].text)
+    #debugOutput('error', baseUrl, urlPath, h, body, proxy, respTuple[0].text)
     print("")
     logger.logEntry("critical", "<---- QUITING PROGRAM ---->")
 

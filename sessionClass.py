@@ -19,7 +19,7 @@ class Session(object):
         self.cryptVersion = int(self.respJson['encryption']['version'])
         self.keyId = int(self.respJson['encryption']['key_id'])
         self.pubKey = self.respJson['encryption']['public_key']
-        self.deviceId = ''.join(self.respJson['device_id'].split('-'))
+        self.ig_did = self.respJson['device_id']
         self.ajax = self.respJson['rollout_hash']
         self.token = self.respJson['config']['csrf_token']
         logger.logEntry('debug', '  Shared data has been scraped')
