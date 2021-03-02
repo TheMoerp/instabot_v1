@@ -162,7 +162,7 @@ def SignUpNewAccount():
     # create account
     baseUrl = "https://www.instagram.com"
     urlPath = "/accounts/web_create_ajax/"
-    #encPassword = encrypt_password(s.keyId, s.pubKey, nAcc.password, version=s.cryptVersion)
+    encPassword = encrypt_password(s.keyId, s.pubKey, nAcc.password, version=s.cryptVersion)
     body = "email={}&enc_password={}&username={}&first_name={}&month={}&day={}&year={}&client_id={}&searmless_login_enabled=1&tos_version=eu&force_sign_up_code={}".format(
             nAcc.mail, encPassword, nAcc.username, nAcc.name, nAcc.month, nAcc.day, nAcc.year, s.mid, signUpCode)
     respTuple = EnterFunction(baseUrl, urlPath, h, body, respTuple[1], False)
@@ -171,9 +171,6 @@ def SignUpNewAccount():
     print("")
     if c.DEBUG1:
         logger.logEntry("critical", "<---- QUITING PROGRAM ---->")
-
-
-
 
 
 SignUpNewAccount()

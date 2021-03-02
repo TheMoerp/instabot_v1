@@ -1,9 +1,9 @@
 account-data:
-  mail: FrischSprachloserSchwan@schabernack.ru
-  username: 1chb1nkeinb0t314223
-  name: IchBinKeinBot
-  password: e1nzig@rt1gesP@5sw0rd
-  birthday: 9.9.1999
+  mail: GrenzenlosLebhafterSchimpanse@yeezus.ru
+  username: chb1nk3dein14dsf
+  name: IchB2inKeinBot
+  password: e1n2zig@rt1gesP@5sw0rd
+  birthday: 9.9.1989
 
 proxy-config:
   max_same_proxy: 3
@@ -11,6 +11,7 @@ proxy-config:
   working_proxy_timeout: 7
   working_proxy_retrys: 5
   max_proxy_spam: 3
+  max_session_proxy: 10 
 
 log-colors:
   debug: white
@@ -19,4 +20,7 @@ log-colors:
   error: red
   critical: red
 
-debug-log-level: 3
+# 1: only successes & errors
+# 2: successes & errors and proxy infos
+# 3: complete debug output
+debug-log-level: 2
