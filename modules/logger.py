@@ -17,7 +17,6 @@ LEVEL_STYLES = {
 }
 LOG_FORMAT = '[%(levelname)s]: %(message)s'
 LOG_PATH = r'C:\Users\matth\Documents\Workspace\Instagram_Bot\Logs/igSignUp.log'
-BACKUP_COUNT = 2
 NEWLINE_DEBUG = "            "
 NEWLINE_ERROR = "            "
 NEWLINE_INFO = "            "
@@ -25,7 +24,7 @@ NEWLINE_INFO = "            "
 
 
 rollOver = os.path.isfile(LOG_PATH)
-file = logging.handlers.RotatingFileHandler(LOG_PATH, mode='a', backupCount=BACKUP_COUNT)
+file = logging.handlers.RotatingFileHandler(LOG_PATH, mode='a', backupCount=c.BACKUP_LOGS)
 if rollOver:
     file.doRollover()
 
