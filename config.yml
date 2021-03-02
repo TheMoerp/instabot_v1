@@ -20,7 +20,5 @@ log-colors:
   error: red
   critical: red
 
-# 1: only successes & errors
-# 2: successes & errors and proxy infos
-# 3: complete debug output
 debug-log-level: 2
+backup-logs: 3
