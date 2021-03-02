@@ -24,7 +24,7 @@ def GetProxy():
             if c.DEBUG1:
                 logger.logEntry("critical", "Tryed to get the same proxy for {} times\n<---- QUITING PROGRAM ---->".format(c.MAX_SAME_PROXY))
             exit()
-        elif len(proxy['https']) > 9:
+        elif len(proxy['https']) < 8:
             continue
     usedProxys.add(proxy['https'])
 
