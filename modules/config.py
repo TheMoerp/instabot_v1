@@ -23,6 +23,8 @@ elif debuglvl == 3:
     DEBUG2 = True
     DEBUG1 = True
 
+# backup logs
+BACKUP_LOGS = configDict['backup-logs']
 
 # Account config
 MAIL = accConf['mail']
