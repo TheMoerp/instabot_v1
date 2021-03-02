@@ -6,20 +6,22 @@ import config as c
 
 ######################################################
 FIELD_STYLES = {
-    'levelname': {'bold': True, 'color': 'black'}
+    'levelname': {'bold': True, 'color': 'black'},
+    'asctime': {'faint': True, 'color': 'white'}
 }
 LEVEL_STYLES = {
-    'critical': {'bold': True, 'color': c.CRITICAL_COLOR},
+    'critical': {'inverse': True, 'bold': True, 'color': c.CRITICAL_COLOR,},
     'error': {'bold': True, 'color': c.ERROR_COLOR},
     'warning': {'color': c.WARNING_COLOR},
     'info': {'bold': True, 'color': c.INFO_COLOR},
     'debug': {'color': c.DEBUG_COLOR}
 }
-LOG_FORMAT = '[%(levelname)s]: %(message)s'
+LOG_FORMAT = '%(asctime)s [%(levelname)s]: %(message)s'
 LOG_PATH = r'C:\Users\matth\Documents\Workspace\Instagram_Bot\Logs/igSignUp.log'
-NEWLINE_DEBUG = "            "
-NEWLINE_ERROR = "            "
-NEWLINE_INFO = "            "
+NEWLINE_DEBUG = "                     "
+NEWLINE_ERROR = "                     "
+NEWLINE_INFO = "                     "
+coloredlogs.DEFAULT_DATE_FORMAT = '%H:%M:%S'
 ######################################################
 
 
@@ -51,4 +53,3 @@ def logEntry(level, message):
         logger.error(message)
     elif level == 'critical':
         logger.critical(message)
-

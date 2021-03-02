@@ -11,7 +11,8 @@ from proxyCrawler import ProxyRequest
 from igPwdEncrypt import encrypt_password
 
 if c.DEBUG1:
-     logger.logEntry("info", "    <---- STARTING TO CREATE AN INSTAGRAM ACCOUNT ---->\n")
+    print('\n')
+    logger.logEntry("info", "    <---- STARTING TO CREATE AN INSTAGRAM ACCOUNT ---->\n")
 
 
 # quick checks the response to known issues
@@ -66,6 +67,13 @@ def debugOutput(level, baseUrl, urlPath, h, body, proxy, resp):
                     url, logger.NEWLINE_DEBUG, proxy['https'], logger.NEWLINE_DEBUG, h.GetPrettyHeaders(), logger.NEWLINE_DEBUG, prettyBody, logger.NEWLINE_DEBUG, prettyResp))
 
 
+def RandomSleep():
+    sleepTime = random.uniform(1.0, 10.0)
+    if c.DEBUG3:
+        logger.logEntry('debug', '   Sleeping for {} seconds...'.format(str(sleepTime)[:4]))
+    time.sleep(sleepTime)
+
+
 def EnterFunction(baseUrl, urlPath, h, body, proxy, confCheck):
     respCheck = False
     curSpamCnt = 0
@@ -79,7 +87,6 @@ def EnterFunction(baseUrl, urlPath, h, body, proxy, confCheck):
 
         curSpamCnt += 1
         curProxySpamCnt += 1
-        time.sleep(random.uniform(1.0, 2.0))
 
         # check if the proxy has to be changed due to too frequent spam detections
         if curProxySpamCnt <= c.MAX_PROXY_SPAM:
@@ -109,13 +116,38 @@ def SignUpNewAccount():
     global spamCnt
     spamCnt = 0
 
+    mail = input('Change email: ')
+    if mail != '':
+        if c.DEBUG2:
+            logger.logEntry('debug', '   Changed the mail address')
+    else:
+        mail = c.MAIL
+        if c.DEBUG3:        
+            logger.logEntry('debug', '   Kept default mail address from config.yml')
+    username = input('Change username: ')
+    if username != '':
+        if c.DEBUG2:
+            logger.logEntry('debug', '   Changed username')
+    else:
+        username = c.USERNAME
+        if c.DEBUG3:
+            logger.logEntry('debug', '   Kept default username from config.yml')
+
+
 
     # creating objects
-    nAcc = accountClass.Account(c.MAIL, c.NAME, c.USERNAME, c.PASSWORD, c.DAY, c.MONTH, c.YEAR)
+    nAcc = accountClass.Account(mail, c.NAME, username, c.PASSWORD, c.DAY, c.MONTH, c.YEAR)
+    if c.DEBUG2:
+        print('')
+        mailLen = len(nAcc.mail) + 7
+        heading = f"{' Account Data '.center(mailLen, '-')}"
+        footline = '-'*mailLen
+        logger.logEntry('debug', '   {}\n\n{}email: {}\n{}username: {}\n{}password: {}\n{}name: {}\n{}birthday: {}.{}.{}\n\n{}{}\n'.format(heading, logger.NEWLINE_DEBUG, nAcc.mail, 
+        logger.NEWLINE_DEBUG, nAcc.username, logger.NEWLINE_DEBUG, nAcc.password, logger.NEWLINE_DEBUG, nAcc.name, logger.NEWLINE_DEBUG, nAcc.day, nAcc.month, nAcc.year, logger.NEWLINE_DEBUG, footline))
     s = sessionClass.Session()
     h = headerClass.PostHeaders('close', s)
     proxy = s.GetWorkingProxy()
-    time.sleep(random.uniform(1.0, 2.0))
+    RandomSleep()
 
     # UserData
     baseUrl = "https://www.instagram.com"
@@ -126,7 +158,7 @@ def SignUpNewAccount():
     respTuple = EnterFunction(baseUrl, urlPath, h, body, proxy, False)
     if c.DEBUG1:
         logger.logEntry("info", "    The user data has been entered successfully")
-    time.sleep(random.uniform(1.0, 2.0))
+    RandomSleep()
 
     # Age
     baseUrl = "https://www.instagram.com"
@@ -135,7 +167,7 @@ def SignUpNewAccount():
     respTuple = EnterFunction(baseUrl, urlPath, h, body, respTuple[1], False)
     if c.DEBUG1:
         logger.logEntry("info", "    The age has been entered successfully")
-    time.sleep(random.uniform(1.0, 2.0))
+    RandomSleep()
 
     # send mail
     baseUrl = "https://i.instagram.com"
@@ -146,7 +178,7 @@ def SignUpNewAccount():
     if c.DEBUG1:
         logger.logEntry("info", "    An confermation code has been send to the following mail address\n{}> Mail: {}".format(
                         logger.NEWLINE_INFO, nAcc.mail))
-    time.sleep(random.uniform(1.0, 2.0))
+    RandomSleep()
 
     # check confermation code
     baseUrl = "https://i.instagram.com"
@@ -157,7 +189,7 @@ def SignUpNewAccount():
     signUpCode = respDict['signup_code']
     if c.DEBUG1:
         logger.logEntry("info", "    The confermation code has been accepted")
-    time.sleep(random.uniform(2.0, 3.0))
+    RandomSleep()
 
     # create account
     baseUrl = "https://www.instagram.com"

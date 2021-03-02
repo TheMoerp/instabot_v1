@@ -1,8 +1,8 @@
 account-data:
-  mail: zursuchetexthiereingeben@existiert.net
-  username: t0iletteNm4n567
-  name: IchB2inKweinBot
-  password: N0bodyNe€dsP4asswords
+  mail: GeborgenLebendigerSteinbock@existiert.net
+  username: t0i3452N412
+  name: KeinBot
+  password: p4s5w0rd
   birthday: 9.9.1989
 
 proxy-config:
@@ -11,7 +11,7 @@ proxy-config:
   working_proxy_timeout: 7
   working_proxy_retrys: 5
   max_proxy_spam: 3
-  max_session_proxy: 10 
+  max_session_proxy: 30
 
 log-colors:
   debug: white
