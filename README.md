@@ -1,6 +1,6 @@
 # instabot
 ## Maintainence
-Doesn't work anymore is not beeing maintained!!!
+**Doesn't work anymore is not beeing maintained!!!**
 ## Usage
 To install the python requirements enter:
 
