@@ -1,0 +1,6 @@
+pycryptodomex
+PyNaCl
+beautifulsoup4
+coloredlogs
+requests
+pyyaml
